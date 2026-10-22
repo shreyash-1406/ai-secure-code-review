@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Review #{{ review_id }}{% endblock %}
+{% block content %}
+<h1>Review #{{ review_id }} · {{ r.filename }}</h1>
+<p class="muted">{{ created }} · {{ r.language }} ·
+  {% if r.ai_used %}AI model: {{ r.model }}{% else %}rules only{% endif %}</p>
+
+{% for note in r.notes %}<div class="alert info">{{ note }}</div>{% endfor %}
+
+<div class="cards">
+  <div class="card stat grade-{{ r.grade }}">Score<b>{{ r.score }}/100</b>Grade {{ r.grade }}</div>
+  {% for sev, n in r.counts.items() if sev != "INFO" %}
+    <div class="card stat">{{ sev|title }}<b>{{ n }}</b></div>
+  {% endfor %}
+</div>
+
+{% if not r.findings %}
+  <div class="card">No issues found. 🎉 (That doesn't prove the code is secure, only that nothing matched.)</div>
+{% endif %}
+
+{% for f in r.findings %}
+<details class="finding {{ 'fp' if f.verdict == 'false_positive' else '' }}" {% if loop.index <= 3 %}open{% endif %}>
+  <summary>
+    <span class="badge {{ f.severity }}">{{ f.severity }}</span>
+    <b>{{ f.title }}</b>
+    {% if f.line %}<span class="muted">line {{ f.line }}</span>{% endif %}
+    {% if f.cwe %}<span class="tag">{{ f.cwe }}</span>{% endif %}
+    <span class="tag">{{ 'AI logic review' if f.source == 'ai' else f.rule_id }}</span>
+    {% if f.verdict == 'false_positive' %}<span class="tag fp-tag">likely false positive</span>{% endif %}
+  </summary>
+  {% if f.code %}<pre class="code">{{ f.code }}</pre>{% endif %}
+  {% if f.explanation %}<p><b>Why it matters:</b> {{ f.explanation }}
+    {% if f.confidence %}<span class="muted">(confidence: {{ f.confidence }})</span>{% endif %}</p>{% endif %}
+  {% if f.fixed_code %}<p><b>Suggested fix:</b></p><pre class="code fix">{{ f.fixed_code }}</pre>{% endif %}
+  <p><b>Recommendation:</b> {{ f.recommendation }}</p>
+  {% if f.references %}<p class="small">{% for ref in f.references %}<a href="{{ ref }}" rel="noopener" target="_blank">{{ ref }}</a> {% endfor %}</p>{% endif %}
+</details>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,4 @@
+flask>=3.0
+requests>=2.31
+gunicorn>=21.2
+secscan @ git+https://github.com/shreyash-1406/code-security-scanner.git

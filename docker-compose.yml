@@ -1,0 +1,19 @@
+services:
+  ollama:
+    image: ollama/ollama
+    volumes:
+      - ollama:/root/.ollama
+  web:
+    build: .
+    ports:
+      - "127.0.0.1:5000:5000"
+    environment:
+      LLM_BASE_URL: http://ollama:11434/v1
+      LLM_MODEL: qwen2.5-coder:7b
+    volumes:
+      - data:/app/data
+    depends_on:
+      - ollama
+volumes:
+  ollama:
+  data:

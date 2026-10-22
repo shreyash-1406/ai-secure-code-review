@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Review code for security issues</h1>
+<p class="muted">Paste a snippet or upload a source file. The static scanner flags risky patterns, then the AI model
+  checks each one in context, explains it, and suggests a fix.</p>
+
+{% if error %}<div class="alert">{{ error }}</div>{% endif %}
+
+<form method="post" action="{{ url_for('review') }}" enctype="multipart/form-data" class="card">
+  <label>Language
+    <select name="language">
+      {% for ext, name in languages.items() %}
+        <option value="{{ ext }}">{{ name }} ({{ ext }})</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Code
+    <textarea name="code" rows="18" spellcheck="false" placeholder="Paste code here..."></textarea>
+  </label>
+  <div class="or">or</div>
+  <label>Upload a file <input type="file" name="file"></label>
+  <button type="submit">Run review</button>
+  <p class="muted small">Reviews can take a minute with a local model.</p>
+</form>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}History{% endblock %}
+{% block content %}
+<h1>Past reviews</h1>
+{% if rows %}
+<table class="card">
+  <thead><tr><th>#</th><th>Date</th><th>File</th><th>Score</th><th>Mode</th></tr></thead>
+  <tbody>
+  {% for row in rows %}
+    <tr>
+      <td><a href="{{ url_for('view_review', review_id=row.id) }}">{{ row.id }}</a></td>
+      <td>{{ row.created }}</td>
+      <td>{{ row.filename }}</td>
+      <td><span class="badge grade-{{ row.grade }}">{{ row.score }} ({{ row.grade }})</span></td>
+      <td>{{ 'AI + rules' if row.ai_used else 'rules only' }}</td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p class="muted">No reviews yet. <a href="{{ url_for('index') }}">Run one</a>.</p>
+{% endif %}
+{% endblock %}
